@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Authentication</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <div class="login-dark">
+    <form id="registerForm">
+        <h2 class="sr-only" for="email"></h2><h2 style = "text-align: center;">Register Form</h2>
+        <div class="illustration"><i class="icon ion-ios-compose-outline"></i></div>
+        <div class="form-group"><input class="form-control" type="text" name="username" placeholder="Username" id="username"></div>
+        <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Password" id="password"></div>
+        <div class="form-group"><input class="form-control" type="number" name="role" placeholder="1" id="role" max="3" min="1"></div>
+        <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Register</button></div><a href="/" class="transfer">Already have an account?</a></form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
+
+    const response = await fetch('/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, role })
+        });
+
+    const data = await response.json();
+    if (response.ok) {
+        alert('Registration successful!');
+        window.location.href = '/';
+    } else {
+        alert(`Registration failed: ${data[0].message}`);
+    }
+});
+
+var idex = 0;
+    jQuery(document).ready(function($) {$("body").click(function(e) {var key = new Array("☆","★","✧","✵","⚝","✫",);var $i = $("<span></span>").text(key[idex]);idex = Math.floor(Math.random()*5)
+    var x = e.pageX,y = e.pageY;
+    $i.css({"z-index": 5201314,"top": y- 20,"left": x,"position": "absolute","font-weight": "bold","font-size": "30px","color": "rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")"});
+    $("body").append($i);
+    $i.animate({"top": y - 70,"left": x+90,"font-size": 20,"opacity": 0},15*100,function() {$i.remove();});
+    });});
+
+  </script>
+</body>
+</html>
