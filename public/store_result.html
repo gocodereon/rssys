@@ -54,6 +54,10 @@
     const username = localStorage.getItem('username');
     const token = localStorage.getItem('x-auth-token');
 
+    if (!token) {
+    window.location.href = '/';
+    }
+
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
@@ -87,6 +91,8 @@
 
    async function logout() {
     try{
+      localStorage.clear();
+      
       const response = await fetch(`http://localhost:4000/delete_token`, {
                 method: 'POST',
                 headers: {
@@ -158,9 +164,11 @@
           recordElement.classList.add('card', 'mb-3');
           recordElement.innerHTML = `
             <div class="card-body">
-              <p class="card-text">Result : ${record.result}</p>
-              <p class="card-text">Create Date : ${record.created_at}</p>
-              <p class="card-text">Update Date : ${record.updated_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
+              <p class="card-text">${record.created_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
+              <p class="card-text">${record.updated_at}</p>
             </div>
           `;
           dataDisplay.appendChild(recordElement);
