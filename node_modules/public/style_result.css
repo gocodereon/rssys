@@ -1,0 +1,51 @@
+.title {
+  background-color:#3700B3;
+  height: 62px;
+  border-radius: 10px;
+  box-shadow:0px 6px 14px rgba(0,0,0,0.8);
+}
+.title h1{
+  padding-top: 9px;
+}
+.row #add,.row #update{
+  padding-top: 56px;
+}
+.card {
+    transition: transform 0.3s;
+    box-shadow:0px 6px 10px rgba(0,0,0,0.8);
+  }
+  .card:hover {
+    transform: scale(1.093);
+  }
+  .record-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+.dark-mode {
+    background-color: #222;
+    color: #fff;
+  }
+  
+  .dark-mode .form-control {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .dark-mode .btn {
+    color: #fff;
+  }
+  
+  .dark-mode .btn-secondary {
+    background-color: #777;
+  }
+  
+  .dark-mode .card {
+    border-color :#3700B3;
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .dark-mode .card-body {
+    border-color: #444;
+  }
+  
