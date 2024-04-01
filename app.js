@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 const crypto = require("crypto");
 const routes = require("./route");
-const authMiddleware = require("./middleware/checkJWT"); 
+const authMiddleware = require("./middleware/checkJWT");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -18,7 +18,6 @@ function encrypt(text, key) {
   return encrypted;
 }
 
-
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +31,10 @@ app.post("/create", async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
-    const encryptedPassword = encrypt(password, Buffer.from(SECRET_KEY, "utf8"));
+    const encryptedPassword = encrypt(
+      password,
+      Buffer.from(SECRET_KEY, "utf8")
+    );
     console.log("Encrypted Password:", encryptedPassword);
 
     const response = await fetch(HASURA_URL, {
@@ -68,7 +70,10 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const encryptedPassword = encrypt(password, Buffer.from(SECRET_KEY, "utf8"));
+    const encryptedPassword = encrypt(
+      password,
+      Buffer.from(SECRET_KEY, "utf8")
+    );
 
     const response = await fetch(HASURA_URL, {
       method: "POST",
@@ -162,10 +167,10 @@ app.get("/data", async (req, res) => {
 
 // Update data route
 app.post("/update", async (req, res) => {
-  const { id, result, date } = req.body;
+  const { id, result } = req.body;
   app.use(authMiddleware);
 
-  console.log("Update request received:", { id, result, date });
+  console.log("Update request received:", { id, result });
 
   try {
     const response = await fetch(HASURA_URL, {
@@ -176,16 +181,16 @@ app.post("/update", async (req, res) => {
       },
       body: JSON.stringify({
         query: `
-          mutation ($id: Int!, $result: numeric!, $date: date!) {
+          mutation ($id: uuid!, $result: String!) {
             update_result(
               where: { id: { _eq: $id } },
-              _set: { result: $result, updated_at: $date }
+              _set: { result: $result }
             ) {
               affected_rows
             }
           }
         `,
-        variables: { id: parseInt(id), result: parseInt(result), date: date },
+        variables: { id: id, result: result },
       }),
     });
 
@@ -199,8 +204,8 @@ app.post("/update", async (req, res) => {
 });
 
 // Create data route
-app.post("/create", async (req, res) => {
-  const { result, date } = req.body;
+app.post("/createresult", async (req, res) => {
+  const { result } = req.body;
   app.use(authMiddleware);
 
   try {
@@ -213,7 +218,7 @@ app.post("/create", async (req, res) => {
       body: JSON.stringify({
         query: `
           mutation {
-            insert_result(objects: {result: "${result}", created_at: "${date}", updated_at: "${new Date().toISOString()}"}) {
+            insert_result(objects: {result: "${result}"}) {
               affected_rows
               returning {
                 id
