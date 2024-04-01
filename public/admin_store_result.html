@@ -64,13 +64,15 @@
 
   <script>
     const username = localStorage.getItem('username');
+    const token = localStorage.getItem('x-auth-token');
 
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
                 },
                 body: JSON.stringify({ username })
             });
@@ -107,7 +109,11 @@
     const filterDate = document.getElementById('filterDate').value;
 
     try {
-      const response = await fetch('/data?date=' + filterDate);
+      const response = await fetch('/datarecord?date=' + filterDate, {
+      headers: {
+        'x-auth-token': token
+      }
+    });
       const data = await response.json();
       const dataDisplay = document.getElementById('dataDisplay');
 
@@ -133,7 +139,11 @@
   }
     async function fetchData() {
       try {
-        const response = await fetch('/data');
+        const response = await fetch('/datarecord', {
+        headers: {
+          'x-auth-token': token
+        }
+      });
         const data = await response.json();
         const dataDisplay = document.getElementById('dataDisplay');
   
@@ -211,7 +221,8 @@
         const response = await fetch('/update', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-auth-token': token
           },
           body: JSON.stringify({ id, result})
         });

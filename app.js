@@ -3,7 +3,8 @@ const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 const crypto = require("crypto");
 const routes = require("./route");
-const authMiddleware = require("./middleware/checkJWT");
+const dataRoutes = require("./dataRoutes");
+// const authMiddleware = require("./middleware/checkJWT");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,6 +23,7 @@ app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", routes);
+app.use("/", dataRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -109,128 +111,6 @@ app.post("/login", async (req, res) => {
       res.json({ success: false, message: "Invalid username or password." });
       console.log("Invalid username or password.");
     }
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Fetch data route
-
-app.get("/data", async (req, res) => {
-  const filterDate = req.query.date;
-  app.use(authMiddleware);
-
-  let query = `
-    query {
-      result(order_by: { created_at: desc }, limit: 20) {
-        id
-        result
-        created_at
-        updated_at
-      }
-    }
-  `;
-
-  if (filterDate) {
-    query = `
-      query {
-        result(where: { created_at: { _eq: "${filterDate}" } }, order_by: { created_at: desc }, limit: 20) {
-          id
-          result
-          created_at
-          updated_at
-        }
-      }
-    `;
-  }
-
-  try {
-    const response = await fetch(HASURA_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
-      },
-      body: JSON.stringify({
-        query: query,
-      }),
-    });
-
-    const data = await response.json();
-    res.json(data.data.result);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Update data route
-app.post("/update", async (req, res) => {
-  const { id, result } = req.body;
-  app.use(authMiddleware);
-
-  console.log("Update request received:", { id, result });
-
-  try {
-    const response = await fetch(HASURA_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
-      },
-      body: JSON.stringify({
-        query: `
-          mutation ($id: uuid!, $result: String!) {
-            update_result(
-              where: { id: { _eq: $id } },
-              _set: { result: $result }
-            ) {
-              affected_rows
-            }
-          }
-        `,
-        variables: { id: id, result: result },
-      }),
-    });
-
-    const data = await response.json();
-
-    res.json(data);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Create data route
-app.post("/createresult", async (req, res) => {
-  const { result } = req.body;
-  app.use(authMiddleware);
-
-  try {
-    const response = await fetch(HASURA_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
-      },
-      body: JSON.stringify({
-        query: `
-          mutation {
-            insert_result(objects: {result: "${result}"}) {
-              affected_rows
-              returning {
-                id
-              }
-            }
-          }
-        `,
-      }),
-    });
-
-    const data = await response.json();
-    res.json(data);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });

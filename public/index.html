@@ -58,6 +58,8 @@
         if (response.ok && data.success && verificationStatus === 'success') {
             localStorage.setItem('username', username);
             await performTokenAction('insert_token', username);
+            const token = await performTokenAction('insert_token', username);
+            localStorage.setItem("x-auth-token", token);
             alert('Login successful!');
             try {
                 const roleNumber = await checkRole(username);
@@ -114,6 +116,7 @@
 
             if (response.ok) {
                 console.log(response.message);
+                return responseData.token;
             } else {
                 console.log(response.message);
             }
