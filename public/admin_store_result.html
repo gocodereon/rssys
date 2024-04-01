@@ -99,6 +99,41 @@
         }
     }
 
+    async function checkRole(username) {
+      try {
+        const response = await fetch(`http://localhost:4000/check_role`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username })
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+          return responseData.data.login[0].role; 
+        } else {
+          console.log(response.message);
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error.message);
+      }
+    }
+
+    async function checkRoleAndRedirect(username) {
+      try {
+        const roleNumber = await checkRole(username);
+        if (roleNumber === 1) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error.message);
+      }
+    }
+
+    checkRoleAndRedirect(username);
+
     function logout() {
         window.location.href = '/';
     }
