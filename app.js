@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const crypto = require("crypto");
 const routes = require("./route");
 const dataRoutes = require("./dataRoutes");
-// const authMiddleware = require("./middleware/checkJWT");
+const authMiddleware = require("./middleware/checkJWT");
 
 const app = express();
 const PORT = process.env.PORT || 4000;

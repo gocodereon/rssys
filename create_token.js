@@ -24,7 +24,6 @@ async function insertToken(req, res) {
     const token = await JWT.sign(
       {
         expiresIn: "7d",
-        role:role,
       },
       "SECRET_KEY"
     );
