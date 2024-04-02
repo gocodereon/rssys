@@ -112,9 +112,8 @@ app.post("/login", async (req, res) => {
 
 // Fetch data route
 
-app.get("/data", async (req, res) => {
+app.get("/data", authMiddleware,async (req, res) => {
   const filterDate = req.query.date;
-  app.use(authMiddleware);
 
   let query = `
     query {
@@ -161,9 +160,8 @@ app.get("/data", async (req, res) => {
 });
 
 // Update data route
-app.post("/update", async (req, res) => {
+app.post("/update", authMiddleware ,async (req, res) => {
   const { id, result, date } = req.body;
-  app.use(authMiddleware);
 
   console.log("Update request received:", { id, result, date });
 
@@ -199,7 +197,7 @@ app.post("/update", async (req, res) => {
 });
 
 // Create data route
-app.post("/create", async (req, res) => {
+app.post("/create", authMiddleware ,async (req, res) => {
   const { result, date } = req.body;
   app.use(authMiddleware);
 
