@@ -71,7 +71,7 @@
     if (!token) {
     window.location.href = '/';
     }
-    
+
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
@@ -129,7 +129,7 @@
       try {
         const roleNumber = await checkRole(username);
         if (roleNumber === 1) {
-          window.location.href = '/';
+          window.location.href = '/'
         }
       } catch (error) {
         console.error('Error checking user role:', error.message);
@@ -138,8 +138,27 @@
 
     checkRoleAndRedirect(username);
 
-    function logout() {
-        window.location.href = '/';
+    async function logout() {
+        try{
+      localStorage.clear();
+      
+      const response = await fetch(`http://localhost:4000/delete_token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ username })
+            });
+      const responseData = await response.json();
+
+      if (response.ok) {
+        window.location.href = './index.html';
+      }
+        } catch (error) {
+            console.log(error.message);
+            logout();
+        }
     }
 
     checkexp(username);

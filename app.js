@@ -5,6 +5,8 @@ const crypto = require("crypto");
 const routes = require("./route");
 const dataRoutes = require("./dataRoutes");
 const authMiddleware = require("./middleware/checkJWT");
+const JWT = require("jsonwebtoken");
+const { createClient } = require("redis");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -12,6 +14,11 @@ const HASURA_URL = "http://localhost:8080/v1/graphql";
 const HASURA_ADMIN_SECRET = "Bb429(a7vkl#";
 const SECRET_KEY = "Bb429(a7vkl#".padEnd(32, "0");
 
+function hashUsername(userId) {
+  const hash = crypto.createHash("sha256");
+  hash.update(userId);
+  return hash.digest("hex");
+}
 function encrypt(text, key) {
   const cipher = crypto.createCipheriv("aes-256-cbc", key, Buffer.alloc(16));
   let encrypted = cipher.update(text, "utf8", "hex");
@@ -89,6 +96,7 @@ app.post("/login", async (req, res) => {
             login(where: {username: {_eq: "${username}"}}) {
               id
               password
+              username
             }
           }
         `,
@@ -99,9 +107,30 @@ app.post("/login", async (req, res) => {
 
     if (data.data && data.data.login.length > 0) {
       const storedPassword = data.data.login[0].password;
+      const username = data.data.login[0].username;
 
       if (storedPassword === encryptedPassword) {
-        res.json({ success: true, message: "Login successful!" });
+        const client = createClient();
+        await client.connect();
+
+        const hashedUsername = hashUsername(username);
+
+        const token = await JWT.sign(
+          {
+            expiresIn: "7d",
+            username: username,
+          },
+          "SECRET_KEY"
+        );
+
+        const key = hashedUsername;
+        client.set(key, token, { EX: 604800 });
+
+        client.quit();
+
+        res.setHeader("x-auth-token", token);
+
+        res.json({ success: true, message: "Login successful!", token: token });
         console.log("Login successful!");
       } else {
         res.json({ success: false, message: "Invalid username or password." });
@@ -119,7 +148,7 @@ app.post("/login", async (req, res) => {
 
 // Fetch data route
 
-app.get("/data", authMiddleware,async (req, res) => {
+app.get("/data", authMiddleware, async (req, res) => {
   const filterDate = req.query.date;
 
   let query = `
@@ -167,7 +196,7 @@ app.get("/data", authMiddleware,async (req, res) => {
 });
 
 // Update data route
-app.post("/update", authMiddleware ,async (req, res) => {
+app.post("/update", authMiddleware, async (req, res) => {
   const { id, result, date } = req.body;
 
   console.log("Update request received:", { id, result, date });
@@ -204,7 +233,7 @@ app.post("/update", authMiddleware ,async (req, res) => {
 });
 
 // Create data route
-app.post("/create", authMiddleware ,async (req, res) => {
+app.post("/create", authMiddleware, async (req, res) => {
   const { result, date } = req.body;
   app.use(authMiddleware);
 

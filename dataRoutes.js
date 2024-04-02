@@ -82,7 +82,7 @@ router.get("/datarecord", async (req, res) => {
     query {
       result(order_by: { created_at: desc }, limit: 20) {
         id
-        result
+        result 
         created_at
         updated_at
       }

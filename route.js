@@ -1,13 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const { insertToken } = require("./create_token");
 const { deleteToken } = require("./delete_token");
 const { checkExp } = require("./check_exp");
 const { checkRole } = require("./check_role");
-
-// Route for inserting a token
-router.post("/insert_token", insertToken);
 
 // Route for deleting a token
 router.post("/delete_token", deleteToken);

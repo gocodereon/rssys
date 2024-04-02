@@ -57,8 +57,7 @@
 
         if (response.ok && data.success && verificationStatus === 'success') {
             localStorage.setItem('username', username);
-            await performTokenAction('insert_token', username);
-            const token = await performTokenAction('insert_token', username);
+            const token = data.token;
             localStorage.setItem("x-auth-token", token);
             alert('Login successful!');
             try {
@@ -94,29 +93,6 @@
 
             if (response.ok) {
                 return responseData.data.login[0].role; 
-            } else {
-                console.log(response.message);
-            }
-        } catch (error) {
-            console.log(response.message);
-        }
-    }
-
-    async function performTokenAction(action, username) {
-        try {
-            const response = await fetch(`http://localhost:4000/${action}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username })
-            });
-
-            const responseData = await response.json();
-
-            if (response.ok) {
-                console.log(response.message);
-                return responseData.token;
             } else {
                 console.log(response.message);
             }
