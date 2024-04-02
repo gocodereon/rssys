@@ -3,7 +3,8 @@ const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 const crypto = require("crypto");
 const routes = require("./route");
-const authMiddleware = require("./middleware/checkJWT"); 
+const dataRoutes = require("./dataRoutes");
+// const authMiddleware = require("./middleware/checkJWT");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -18,11 +19,11 @@ function encrypt(text, key) {
   return encrypted;
 }
 
-
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", routes);
+app.use("/", dataRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -32,7 +33,10 @@ app.post("/create", async (req, res) => {
   const { username, password, role } = req.body;
 
   try {
-    const encryptedPassword = encrypt(password, Buffer.from(SECRET_KEY, "utf8"));
+    const encryptedPassword = encrypt(
+      password,
+      Buffer.from(SECRET_KEY, "utf8")
+    );
     console.log("Encrypted Password:", encryptedPassword);
 
     const response = await fetch(HASURA_URL, {
@@ -68,7 +72,10 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const encryptedPassword = encrypt(password, Buffer.from(SECRET_KEY, "utf8"));
+    const encryptedPassword = encrypt(
+      password,
+      Buffer.from(SECRET_KEY, "utf8")
+    );
 
     const response = await fetch(HASURA_URL, {
       method: "POST",

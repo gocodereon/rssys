@@ -2,6 +2,7 @@ const { createClient } = require("redis");
 const crypto = require("crypto");
 const JWT = require("jsonwebtoken");
 
+let globalToken = null;
 function hashUsername(userId) {
   const hash = crypto.createHash("sha256");
   hash.update(userId);
@@ -33,7 +34,13 @@ async function insertToken(req, res) {
 
     client.quit();
 
-    return res.status(200).json({ message: "Token inserted successfully!", token });
+    globalToken = token;
+
+    res.setHeader("x-auth-token", token);
+
+    return res
+      .status(200)
+      .json({ message: "Token inserted successfully!", token });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }

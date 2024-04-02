@@ -12,7 +12,9 @@
     <nav class="title">
       <h1 class="mb-4 text-center">Draw Result API</h1>
     </nav>
-    <button type="button" class="btn btn-secondary" onclick="logout()">Logout</button>
+    <div id="logoutbtn">
+      <button type="button" class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
     <br>
     <div class="row">
       <div class="col-md-6">
@@ -20,11 +22,7 @@
         <form id="dataForm">
           <div class="form-group">
             <label for="result">Result:</label>
-            <input type="number" class="form-control" id="result" name="result" min="1" required>
-          </div>
-          <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" class="form-control" id="date" name="date" required>
+            <input type="text" class="form-control" id="result" name="result" required>
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -54,13 +52,19 @@
 
   <script>
     const username = localStorage.getItem('username');
+    const token = localStorage.getItem('x-auth-token');
+
+    if (!token) {
+    window.location.href = '/';
+    }
 
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
                 },
                 body: JSON.stringify({ username })
             });
@@ -87,10 +91,13 @@
 
    async function logout() {
     try{
+      localStorage.clear();
+      
       const response = await fetch(`http://localhost:4000/delete_token`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
                 },
                 body: JSON.stringify({ username })
             });
@@ -113,7 +120,11 @@
     const filterDate = document.getElementById('filterDate').value;
 
     try {
-      const response = await fetch('/data?date=' + filterDate);
+      const response = await fetch('/datarecord?date=' + filterDate, {
+      headers: {
+        'x-auth-token': token
+      }
+    });
       const data = await response.json();
       const dataDisplay = document.getElementById('dataDisplay');
 
@@ -138,7 +149,11 @@
   }
     async function fetchData() {
       try {
-        const response = await fetch('/data');
+        const response = await fetch('/datarecord', {
+      headers: {
+        'x-auth-token': token
+      }
+    });
         const data = await response.json();
         const dataDisplay = document.getElementById('dataDisplay');
   
@@ -149,9 +164,11 @@
           recordElement.classList.add('card', 'mb-3');
           recordElement.innerHTML = `
             <div class="card-body">
-              <p class="card-text">Result : ${record.result}</p>
-              <p class="card-text">Create Date : ${record.created_at}</p>
-              <p class="card-text">Update Date : ${record.updated_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
+              <p class="card-text">${record.created_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
+              <p class="card-text">${record.updated_at}</p>
             </div>
           `;
           dataDisplay.appendChild(recordElement);
@@ -174,15 +191,15 @@
   
       const formData = new FormData(e.target);
       const result = formData.get('result');
-      const date = formData.get('date');
   
       try {
-        const response = await fetch('/create', {
+        const response = await fetch('/createresult', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-auth-token': token
           },
-          body: JSON.stringify({ result, date})
+          body: JSON.stringify({ result})
         });
   
         window.location.href = window.location.pathname + '?added=true';

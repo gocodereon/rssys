@@ -12,7 +12,9 @@
     <nav class="title">
       <h1 class="mb-4 text-center">Draw Result API</h1>
     </nav>
-    <button type="button" class="btn btn-secondary" onclick="cancelUpdate()">Cancel</button>
+    <div id="logoutbtn">
+      <button type="button" class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
     <br>
     <div class="row">
       <div class="col-md-6">
@@ -20,11 +22,7 @@
         <form id="dataForm">
           <div class="form-group">
             <label for="result">Result:</label>
-            <input type="number" class="form-control" id="result" name="result" min="1" required>
-          </div>
-          <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" class="form-control" id="date" name="date" required>
+            <input type="text" class="form-control" id="result" name="result"  required>
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -36,11 +34,7 @@
           <input type="hidden" id="updateId" name="id">
           <div class="form-group">
             <label for="updateresult">Result:</label>
-            <input type="number" class="form-control" id="updateresult" name="result" min="1" required>
-          </div>
-          <div class="form-group">
-            <label for="updateDate">Date:</label>
-            <input type="date" class="form-control" id="updateDate" name="updateDate" required>
+            <input type="text" class="form-control" id="updateresult" name="result"  required>
           </div>
           <div class="record-actions">
             <button type="submit" class="btn btn-success">Update</button>
@@ -72,13 +66,19 @@
 
   <script>
     const username = localStorage.getItem('username');
+    const token = localStorage.getItem('x-auth-token');
 
+    if (!token) {
+    window.location.href = '/';
+    }
+    
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
                 },
                 body: JSON.stringify({ username })
             });
@@ -103,6 +103,41 @@
         }
     }
 
+    async function checkRole(username) {
+      try {
+        const response = await fetch(`http://localhost:4000/check_role`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username })
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+          return responseData.data.login[0].role; 
+        } else {
+          console.log(response.message);
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error.message);
+      }
+    }
+
+    async function checkRoleAndRedirect(username) {
+      try {
+        const roleNumber = await checkRole(username);
+        if (roleNumber === 1) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error.message);
+      }
+    }
+
+    checkRoleAndRedirect(username);
+
     function logout() {
         window.location.href = '/';
     }
@@ -115,7 +150,11 @@
     const filterDate = document.getElementById('filterDate').value;
 
     try {
-      const response = await fetch('/data?date=' + filterDate);
+      const response = await fetch('/datarecord?date=' + filterDate, {
+      headers: {
+        'x-auth-token': token
+      }
+    });
       const data = await response.json();
       const dataDisplay = document.getElementById('dataDisplay');
 
@@ -126,10 +165,12 @@
         recordElement.classList.add('card', 'mb-3');
         recordElement.innerHTML = `
             <div class="card-body">
-              <p class="card-text">Result : ${record.result}</p>
-              <p class="card-text">Create Date : ${record.created_at}</p>
-              <p class="card-text">Update Date : ${record.updated_at}</p>
-              <button onclick="editRecord(${record.id}, '${record.result}', '${record.created_at}', ${record.updated_at})" class="btn btn-primary">Edit</button>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
+              <p class="card-text">${record.created_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
+              <p class="card-text">${record.updated_at}</p>
+              <button onclick="editRecord('${record.id}', '${record.result}')" class="btn btn-primary">Edit</button>
             </div>
         `;
         dataDisplay.appendChild(recordElement);
@@ -141,7 +182,11 @@
   }
     async function fetchData() {
       try {
-        const response = await fetch('/data');
+        const response = await fetch('/datarecord', {
+        headers: {
+          'x-auth-token': token
+        }
+      });
         const data = await response.json();
         const dataDisplay = document.getElementById('dataDisplay');
   
@@ -152,15 +197,17 @@
           recordElement.classList.add('card', 'mb-3');
           recordElement.innerHTML = `
             <div class="card-body">
-              <p class="card-text">Result : ${record.result}</p>
-              <p class="card-text">Create Date : ${record.created_at}</p>
-              <p class="card-text">Update Date : ${record.updated_at}</p>
-              <button onclick="editRecord(${record.id}, '${record.result}', '${record.created_at}', ${record.updated_at})" class="btn btn-primary">Edit</button>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
+              <p class="card-text">${record.created_at}</p>
+              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
+              <p class="card-text">${record.updated_at}</p>
+              <button onclick="editRecord('${record.id}', '${record.result}')" class="btn btn-primary">Edit</button>
             </div>
           `;
           dataDisplay.appendChild(recordElement);
         });
-  
+        
         const urlParams = new URLSearchParams(window.location.search);
         const added = urlParams.get('added');
         if (added === 'true') {
@@ -173,10 +220,9 @@
       }
     }
   
-    function editRecord(id, result, date) {
+    function editRecord(id, result) {
       document.getElementById('updateId').value = id;
       document.getElementById('updateresult').value = result;
-      document.getElementById('updateDate').value = date;
       document.getElementById('updateForm').style.display = 'block';
       document.getElementById('dataForm').style.display = 'none';
     }
@@ -194,7 +240,7 @@
       const date = formData.get('date');
   
       try {
-        const response = await fetch('/create', {
+        const response = await fetch('/createresult', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -215,15 +261,15 @@
       const formData = new FormData(e.target);
       const id = formData.get('id');
       const result = formData.get('result');
-      const date = formData.get('updateDate');
   
       try {
         const response = await fetch('/update', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'x-auth-token': token
           },
-          body: JSON.stringify({ id, result, date})
+          body: JSON.stringify({ id, result})
         });
   
         const data = await response.json();
