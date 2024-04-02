@@ -11,7 +11,9 @@ function hashUsername(userId) {
 async function checkExp(req, res) {
   const { username } = req.body;
   if (!username) {
-    return res.status(400).json({ message: "Username is required.", status: "Username Not Found" });
+    return res
+      .status(400)
+      .json({ message: "Username is required.", status: "Username Not Found" });
   }
 
   try {
@@ -23,10 +25,15 @@ async function checkExp(req, res) {
     const token = await client.get(hashedUsername);
     if (!token) {
       client.quit();
-      return res.status(404).json({ message: "User not found.", status: "Not Found" });
+      return res
+        .status(404)
+        .json({ message: "User not found.", status: "Not Found" });
     }
 
-    const decodedToken = JWT.decode(token);
+    const decodedToken = JWT.verify(
+      token,
+      "NZz58bsIo3d3XPZsfN0NOm92z9FMfnKgXwovR9fp6ryDIoGRM8HuHLB6i9sc0ig"
+    );
 
     const expiration = decodedToken.exp;
     const currentTime = Math.floor(Date.now() / 1000);
@@ -37,7 +44,7 @@ async function checkExp(req, res) {
         {
           expiresIn: "7d",
         },
-        "SECRET_KEY"
+        "NZz58bsIo3d3XPZsfN0NOm92z9FMfnKgXwovR9fp6ryDIoGRM8HuHLB6i9sc0ig"
       );
 
       client.set(hashedUsername, newToken, { EX: 604800 });
@@ -53,9 +60,13 @@ async function checkExp(req, res) {
 
     client.quit();
 
-    return res.status(200).json({ message: "Token not yet expired.", status: "Online" });
+    return res
+      .status(200)
+      .json({ message: "Token not yet expired.", status: "Online" });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", status: "Error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", status: "Error" });
   }
 }
 

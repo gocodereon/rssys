@@ -38,7 +38,10 @@ const authMiddleware = async (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   } else {
     try {
-      let tokenexp = await JWT.verify(token, "SECRET_KEY");
+      let tokenexp = await JWT.verify(
+        token,
+        "NZz58bsIo3d3XPZsfN0NOm92z9FMfnKgXwovR9fp6ryDIoGRM8HuHLB6i9sc0ig"
+      );
       const tokenIat = new Date(tokenexp.iat * 1000);
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);

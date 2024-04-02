@@ -120,7 +120,7 @@ app.post("/login", async (req, res) => {
             expiresIn: "7d",
             username: username,
           },
-          "SECRET_KEY"
+          "NZz58bsIo3d3XPZsfN0NOm92z9FMfnKgXwovR9fp6ryDIoGRM8HuHLB6i9sc0ig"
         );
 
         const key = hashedUsername;
