@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 File Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px; /* Add margin between file list and buttons */
+        }
+        li {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #upload-btn {
+            margin-top: 10px; /* Add margin above the upload button */
+        }
+        #select-all-container {
+            margin-top: 100px; /* Add margin to the container of "Select All" button */
+        }
+    </style>
+</head>
+<body>
+    <h2>S3 File Manager</h2>
+    <h3>File List</h3>
+
+    <ul id="file-list"></ul>
+    <button type="button" id="refresh-btn">Refresh File List</button>
+    <button type="button" id="delete-btn">Delete Selected Files</button>
+
+    <h3>Upload File</h3>
+    <input type="file" id="file-input" accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
+    <label for="file-input" id="upload-label">Choose File</label>
+    <button type="button" id="upload-btn">Upload</button>
+
+    <script src="client.js"></script>
+</body>
+</html>

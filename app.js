@@ -7,8 +7,10 @@ const dataRoutes = require("./dataRoutes");
 const authMiddleware = require("./middleware/checkJWT");
 const JWT = require("jsonwebtoken");
 const { createClient } = require("redis");
+const s3server = require("./S3/s3_api.js")
 
 const app = express();
+
 const PORT = process.env.PORT || 4000;
 const HASURA_URL = "http://localhost:8080/v1/graphql";
 const HASURA_ADMIN_SECRET = "Bb429(a7vkl#";
@@ -31,6 +33,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", routes);
 app.use("/", dataRoutes);
+
+// Pass the existing app instance to s3server
+const{app: s3app, fileUrl,} = s3server(app);
+//fetch s3url of upload
+app.get("/getFileUrl", (req, res) => {
+  res.json({ fileUrl: fileUrl });
+})
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -147,8 +156,7 @@ app.post("/login", async (req, res) => {
 });
 
 // Fetch data route
-
-app.get("/data", authMiddleware, async (req, res) => {
+/*app.get("/data", authMiddleware, async (req, res) => {
   const filterDate = req.query.date;
 
   let query = `
@@ -185,6 +193,63 @@ app.get("/data", authMiddleware, async (req, res) => {
       body: JSON.stringify({
         query: query,
       }),
+    });
+
+    const data = await response.json();
+    res.json(data.data.result);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});*/
+
+// Fetch data route to include s3url
+app.get("/data", authMiddleware, async (req, res) => {
+  const filterDate = req.query.date;
+
+  let query = `
+    query {
+      result(order_by: { created_at: desc }, limit: 20) {
+        id
+        result
+        created_at
+        updated_at
+      }
+    }
+  `;
+
+  // Check if filterDate is provided
+  if (filterDate) {
+    query = `
+      query {
+        result(
+          where: { created_at: { _eq: "${filterDate}" } }
+          order_by: { created_at: desc }
+          limit: 20
+        ) {
+          id
+          result
+          created_at
+          updated_at
+          files {
+            id
+            s3url
+            result_id
+            created_at
+          }
+        }
+      }
+    `;
+  }
+
+  try {
+    const response = await fetch(HASURA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+      },
+      body: JSON.stringify({ query }),
     });
 
     const data = await response.json();

@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken");
 const fetch = require("node-fetch");
 
-const excludedRoutes = ["/login", "/create", "/"];
+const excludedRoutes = ["/login", "/create", "/","aws-delete.html"];
 
 async function checkRole(username) {
   try {

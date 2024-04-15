@@ -9,6 +9,7 @@
 </head>
 <body class="dark-mode">
   <div class="container mt-5">
+    <!-- Add an input element for file upload -->
     <nav class="title">
       <h1 class="mb-4 text-center">Draw Result API</h1>
     </nav>
@@ -24,6 +25,7 @@
             <label for="result">Result:</label>
             <input type="text" class="form-control" id="result" name="result"  required>
           </div>
+          <input type="file" id="file-input" name="file" accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png" required>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         <div id="response" class="mt-3"></div>
@@ -37,6 +39,7 @@
             <input type="text" class="form-control" id="updateresult" name="result"  required>
           </div>
           <div class="record-actions">
+            <input type="file" id="file-input-u" name="file" accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png" required>
             <button type="submit" class="btn btn-success">Update</button>
             <button type="button" class="btn btn-secondary" onclick="cancelUpdate()">Cancel</button>
           </div>
@@ -212,6 +215,7 @@
         dataDisplay.innerHTML = '';
   
         data.forEach(record => {
+          
           const recordElement = document.createElement('div');
           recordElement.classList.add('card', 'mb-3');
           recordElement.innerHTML = `
@@ -230,7 +234,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const added = urlParams.get('added');
         if (added === 'true') {
-          alert('Data added successfully!');
+          alert('Data added successfully(1)');
           window.location.href = window.location.pathname;
         }
       } catch (error) {
@@ -250,28 +254,44 @@
       document.getElementById('updateForm').style.display = 'none';
       document.getElementById('dataForm').style.display = 'block';
     }
+
   
     document.getElementById('dataForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-  
+
+      const fileInput = document.getElementById("file-input");
+      const file = fileInput.files[0];
       const formData = new FormData(e.target);
       const result = formData.get('result');
       const date = formData.get('date');
+
+      const formDataS3 = new FormData();
+      formDataS3.append("file", file);
   
       try {
-        const response = await fetch('/createresult', {
-          method: 'POST',
+          const response2 = await fetch("/upload", {
+          method: "POST",
+          body: formDataS3,
           headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token
-          },
-          body: JSON.stringify({ result, date})
-        });
+              'x-auth-token': token
+            },
+          });
+          const data2 = await response2.json();
+          const response = await fetch('/createresult', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-token': token
+            },
+            body: JSON.stringify({ result, date})
+          });
+        
   
         window.location.href = window.location.pathname + '?added=true';
       } catch (error) {
         console.error('Error:', error);
         document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+        document.getElementById('response2').innerHTML = `<p>Error: ${error.message}</p>`;
       }
     });
   
@@ -281,8 +301,21 @@
       const formData = new FormData(e.target);
       const id = formData.get('id');
       const result = formData.get('result');
+
+      const fileInput = document.getElementById("file-input-u");
+      const file = fileInput.files[0];
+      const formDataS3 = new FormData();
+      formDataS3.append("file", file);
   
       try {
+        const response2 = await fetch("/upload", {
+          method: "POST",
+          body: formDataS3,
+          headers: {
+                  'x-auth-token': token
+              },
+        });
+        const data2 = await response2.json();
         const response = await fetch('/update', {
           method: 'POST',
           headers: {
@@ -301,6 +334,7 @@
       } catch (error) {
         console.error('Error:', error);
         document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+        /*document.getElementById('response2').innerHTML = `<p>Error: ${error.message}</p>`;*/
       }
     });
   

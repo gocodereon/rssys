@@ -1,0 +1,25 @@
+[from_msgsrv.go:24::dm-im/msg-job/subscriber.(*MessageSubscriber).SubscribeMessageFromMsgSrv()] Mar 31 23:13:22.793 [D] µö╢σê░msg-srvσÅæµ¥ÑτÜäµ╢êµü» &kafka.BatchEvent{t:"go.micro.topic.msgjob.handle", bm:[][]broker.Event{[]broker.Event{(*kafka.publication)(0xc00165c5a0)}}}
+[msghandler.go:39::dm-im/msg-job/handler.(*MsgHandler).HandleMessage()] Mar 31 23:13:22.793 [I] handle message msgId=FD4A6C1EE50E4CB29469A004566AE542 userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+partition:  0 total:  1 events:   1 on:2024-03-31 23:13:22
+[msghandler.go:103::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:22.802 [I] push message msgId=FD4A6C1EE50E4CB29469A004566AE542 userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+[msghandler.go:131::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:22.802 [D] get user info success! userId=2499269982717767815 appStatus=0 pcStatus=0 pushType=18 pushToken=190e35f7e057f795640 voipToken=
+partition:  0 total:  1 events:   1 on:2024-03-31 23:13:28
+[from_msgsrv.go:24::dm-im/msg-job/subscriber.(*MessageSubscriber).SubscribeMessageFromMsgSrv()] Mar 31 23:13:28.793 [D] µö╢σê░msg-srvσÅæµ¥ÑτÜäµ╢êµü» &kafka.BatchEvent{t:"go.micro.topic.msgjob.handle", bm:[][]broker.Event{[]broker.Event{(*kafka.publication)(0xc000799ea0)}}}
+[msghandler.go:39::dm-im/msg-job/handler.(*MsgHandler).HandleMessage()] Mar 31 23:13:28.793 [I] handle message msgId=433477cf9a1748b1bae18d48ce4a2df1 userId=2499269982717767815 toId=1610140619314988495 cmdId=4100
+[msghandler.go:103::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:28.797 [I] push message msgId=433477cf9a1748b1bae18d48ce4a2df1 userId=2499269982717767815 toId=1610140619314988495 cmdId=4100
+[msghandler.go:131::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:28.797 [D] get user info success! userId=1610140619314988495 appStatus=1 pcStatus=0 pushType=254 pushToken= voipToken=
+partition:  0 total:  1 events:   1 on:2024-03-31 23:13:29
+[from_msgsrv.go:24::dm-im/msg-job/subscriber.(*MessageSubscriber).SubscribeMessageFromMsgSrv()] Mar 31 23:13:29.793 [D] µö╢σê░msg-srvσÅæµ¥ÑτÜäµ╢êµü» &kafka.BatchEvent{t:"go.micro.topic.msgjob.handle", bm:[][]broker.Event{[]broker.Event{(*kafka.publication)(0xc0009c9360)}}}
+[msghandler.go:39::dm-im/msg-job/handler.(*MsgHandler).HandleMessage()] Mar 31 23:13:29.793 [I] handle message msgId=52FE4D86896342F2917EF6283EAEA4B0 userId=1610140619314988495 toId=2499269982717767815 cmdId=4106
+[msghandler.go:103::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:29.798 [I] push message msgId=52FE4D86896342F2917EF6283EAEA4B0 userId=1610140619314988495 toId=2499269982717767815 cmdId=4106
+[msghandler.go:131::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:29.798 [D] get user info success! userId=2499269982717767815 appStatus=0 pcStatus=0 pushType=18 pushToken=190e35f7e057f795640 voipToken=
+[from_msgsrv.go:24::dm-im/msg-job/subscriber.(*MessageSubscriber).SubscribeMessageFromMsgSrv()] Mar 31 23:13:37.793 [D] µö╢σê░msg-srvσÅæµ¥ÑτÜäµ╢êµü» &kafka.BatchEvent{t:"go.micro.topic.msgjob.handle", bm:[][]broker.Event{[]broker.Event{(*kafka.publication)(0xc001e5c910)}}}
+[msghandler.go:39::dm-im/msg-job/handler.(*MsgHandler).HandleMessage()] Mar 31 23:13:37.793 [I] handle message msgId=C11632ACA8AA4212A93F691FAD833B8D userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+partition:  0 total:  1 events:   1 on:2024-03-31 23:13:37
+[msghandler.go:103::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:37.798 [I] push message msgId=C11632ACA8AA4212A93F691FAD833B8D userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+[msghandler.go:131::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:37.798 [D] get user info success! userId=2499269982717767815 appStatus=0 pcStatus=0 pushType=18 pushToken=190e35f7e057f795640 voipToken=
+[from_msgsrv.go:24::dm-im/msg-job/subscriber.(*MessageSubscriber).SubscribeMessageFromMsgSrv()] Mar 31 23:13:43.794 [D] µö╢σê░msg-srvσÅæµ¥ÑτÜäµ╢êµü» &kafka.BatchEvent{t:"go.micro.topic.msgjob.handle", bm:[][]broker.Event{[]broker.Event{(*kafka.publication)(0xc0012e15e0)}}}
+partition:  0 total:  1 events:   1 on:2024-03-31 23:13:43
+[msghandler.go:39::dm-im/msg-job/handler.(*MsgHandler).HandleMessage()] Mar 31 23:13:43.794 [I] handle message msgId=5C742BF457F14B0FB815A8B81D8F0183 userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+[msghandler.go:103::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:43.803 [I] push message msgId=5C742BF457F14B0FB815A8B81D8F0183 userId=1610140619314988495 toId=2499269982717767815 cmdId=4100
+[msghandler.go:131::dm-im/msg-job/handler.(*MsgHandler).handlePush()] Mar 31 23:13:43.803 [D] get user info success! userId=2499269982717767815 appStatus=0 pcStatus=0 pushType=18 pushToken=190e35f7e057f795640 voipToken=

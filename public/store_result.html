@@ -1,216 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Draw Result API</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/style_result.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Result API</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px; /* Add margin between file list and buttons */
+        }
+        li {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #upload-btn {
+            margin-top: 10px; /* Add margin above the upload button */
+        }
+        #select-all-container {
+            margin-top: 100px; /* Add margin to the container of "Select All" button */
+        }
+    </style>
 </head>
 <body class="dark-mode">
-  <div class="container mt-5">
-    <nav class="title">
-      <h1 class="mb-4 text-center">Draw Result API</h1>
-    </nav>
-    <div id="logoutbtn">
-      <button type="button" class="btn btn-secondary" onclick="logout()">Logout</button>
-    </div>
-    <br>
-    <div class="row">
-      <div class="col-md-6">
-        <h2>Add New Record</h2>
-        <form id="dataForm">
-          <div class="form-group">
-            <label for="result">Result:</label>
-            <input type="text" class="form-control" id="result" name="result" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        <div id="response" class="mt-3"></div>
-      </div>
-    </div>
-    <div class="row mt-4">
-      <div class="col">
-        <h2>Draw Result</h2>
+    <div class="container mt-5">
+        <nav class="title">
+            <h1 class="mb-4 text-center">Draw Result API</h1>
+        </nav>
+        <div id="logoutbtn">
+            <button type="button" class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+        <br>
         <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="filterDate">Filter by Date:</label>
-              <input type="date" class="form-control" id="filterDate">
+            <div class="col-md-6">
+                <h2>Add New Record</h2>
+                <form id="dataForm">
+                    <div class="form-group">
+                        <label for="result">Result:</label>
+                        <input type="text" class="form-control" id="result" name="result" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="file-input">Upload File:</label>
+                        <input type="file" id="file-input" accept=".txt,.pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
+                        <label for="file-input" id="upload-label">Choose File</label>
+                        <button type="button" id="upload-btn">Upload</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <div id="response" class="mt-3"></div>
             </div>
-            <button class="btn btn-primary mb-3" onclick="filterData()">Filter</button>
-          </div>
-          <br>
-        </div><br>
-        <div id="dataDisplay" class="row"></div>
-      </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                <h2>Draw Result</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="filterDate">Filter by Date:</label>
+                            <input type="date" class="form-control" id="filterDate">
+                        </div>
+                        <button class="btn btn-primary mb-3" onclick="filterData()">Filter</button>
+                    </div>
+                    <br>
+                </div><br>
+                <div id="dataDisplay" class="row"></div>
+            </div>
+        </div>
     </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <script>
-    const username = localStorage.getItem('username');
-    const token = localStorage.getItem('x-auth-token');
+    <script>
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('x-auth-token');
 
-    if (!token) {
-    window.location.href = '/';
-    }
+        if (!token) {
+            window.location.href = '/';
+        }
 
-    async function checkexp(username) {
-        try {
-            const response = await fetch(`http://localhost:4000/check_exp`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
-                },
-                body: JSON.stringify({ username })
-            });
+        async function checkexp(username) {
+            try {
+                const response = await fetch(`http://localhost:4000/check_exp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ username })
+                });
 
-            const responseData = await response.json();
+                const responseData = await response.json();
 
-            if (response.ok) {
-                if (responseData.status === "generate") {
-                  console.log(responseData.message);
+                if (response.ok) {
+                    if (responseData.status === "generate") {
+                        console.log(responseData.message);
+                    } else if (responseData.status === "Online") {
+                        console.log(responseData.message);
+                    }
+                } else {
+                    console.log(username);
+                    console.log(responseData.message);
+                    logout();
                 }
-          else if (responseData.status === "Online"){
-            console.log(responseData.message);
-          }
-            } else {
-                console.log(username);
-                console.log(responseData.message);
+            } catch (error) {
+                console.log(error.message);
                 logout();
             }
-        } catch (error) {
-            console.log(error.message);
-            logout();
         }
-    }
 
-   async function logout() {
-    try{
-      localStorage.clear();
-      
-      const response = await fetch(`http://localhost:4000/delete_token`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': token
-                },
-                body: JSON.stringify({ username })
-            });
-      const responseData = await response.json();
+        async function logout() {
+            try {
+                localStorage.clear();
 
-      if (response.ok) {
-        window.location.href = './index.html';
-      }
-        } catch (error) {
-            console.log(error.message);
-            logout();
+                const response = await fetch(`http://localhost:4000/delete_token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ username })
+                });
+                const responseData = await response.json();
+
+                if (response.ok) {
+                    window.location.href = './index.html';
+                }
+            } catch (error) {
+                console.log(error.message);
+                logout();
+            }
         }
-    }
 
-    checkexp(username);
-    const interval = 60 * 60 * 1000;
-    setInterval(checkexp, interval);
+        checkexp(username);
+        const interval = 60 * 60 * 1000;
+        setInterval(checkexp, interval);
 
-    async function filterData() {
-    const filterDate = document.getElementById('filterDate').value;
+        async function filterData() {
+            const filterDate = document.getElementById('filterDate').value;
 
-    try {
-      const response = await fetch('/datarecord?date=' + filterDate, {
-      headers: {
-        'x-auth-token': token
-      }
-    });
-      const data = await response.json();
-      const dataDisplay = document.getElementById('dataDisplay');
+            try {
+                const response = await fetch('/datarecord?date=' + filterDate, {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                const data = await response.json();
+                const dataDisplay = document.getElementById('dataDisplay');
 
-      dataDisplay.innerHTML = '';
+                dataDisplay.innerHTML = '';
 
-      data.forEach(record => {
-        const recordElement = document.createElement('div');
-        recordElement.classList.add('card', 'mb-3');
-        recordElement.innerHTML = `
-            <div class="card-body">
-              <p class="card-text">Result : ${record.result}</p>
-              <p class="card-text">Create Date : ${record.created_at}</p>
-              <p class="card-text">Update Date : ${record.updated_at}</p>
-            </div>
-        `;
-        dataDisplay.appendChild(recordElement);
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
-    }
-  }
-    async function fetchData() {
-      try {
-        const response = await fetch('/datarecord', {
-      headers: {
-        'x-auth-token': token
-      }
-    });
-        const data = await response.json();
-        const dataDisplay = document.getElementById('dataDisplay');
-  
-        dataDisplay.innerHTML = '';
-  
-        data.forEach(record => {
-          const recordElement = document.createElement('div');
-          recordElement.classList.add('card', 'mb-3');
-          recordElement.innerHTML = `
-            <div class="card-body">
-              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
-              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
-              <p class="card-text">${record.created_at}</p>
-              <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
-              <p class="card-text">${record.updated_at}</p>
-            </div>
-          `;
-          dataDisplay.appendChild(recordElement);
+                data.forEach(record => {
+                    const recordElement = document.createElement('div');
+                    recordElement.classList.add('card', 'mb-3');
+                    recordElement.innerHTML = `
+                        <div class="card-body">
+                            <p class="card-text">Result : ${record.result}</p>
+                            <p class="card-text">Create Date : ${record.created_at}</p>
+                            <p class="card-text">Update Date : ${record.updated_at}</p>
+                        </div>
+                    `;
+                    dataDisplay.appendChild(recordElement);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/datarecord', {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                const data = await response.json();
+                const dataDisplay = document.getElementById('dataDisplay');
+
+                dataDisplay.innerHTML = '';
+
+                data.forEach(record => {
+                    const recordElement = document.createElement('div');
+                    recordElement.classList.add('card', 'mb-3');
+                    recordElement.innerHTML = `
+                        <div class="card-body">
+                            <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Result :</span> ${record.result}</p>
+                            <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Create Date :</span></p>
+                            <p class="card-text">${record.created_at}</p>
+                            <p class="card-text"><span style="color: #2980ef; font-weight: bold;">Update Date :</span></p>
+                            <p class="card-text">${record.updated_at}</p>
+                        </div>
+                    `;
+                    dataDisplay.appendChild(recordElement);
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const added = urlParams.get('added');
+                if (added === 'true') {
+                    alert('Data added successfully!');
+                    window.location.href = window.location.pathname;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const result = formData.get('result');
+
+            try {
+                const response = await fetch('/createresult', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ result })
+                });
+
+                window.location.href = window.location.pathname + '?added=true';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
         });
-  
-        const urlParams = new URLSearchParams(window.location.search);
-        const added = urlParams.get('added');
-        if (added === 'true') {
-          alert('Data added successfully!');
-          window.location.href = window.location.pathname;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
-      }
-    }
-  
-    document.getElementById('dataForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-  
-      const formData = new FormData(e.target);
-      const result = formData.get('result');
-  
-      try {
-        const response = await fetch('/createresult', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token
-          },
-          body: JSON.stringify({ result})
-        });
-  
-        window.location.href = window.location.pathname + '?added=true';
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('response').innerHTML = `<p>Error: ${error.message}</p>`;
-      }
-    });
 
-    fetchData();
-  </script>
-  
+        fetchData();
+
+        // Function to handle upload button click
+        const handleUploadClick = async () => {
+            const fileInput = document.getElementById("file-input");
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                console.log("File uploaded successfully:", data.fileUrl);
+                // Refresh the file list after upload
+                handleRefreshClick();
+            } catch (error) {
+                console.error("Error uploading file:", error);
+            }
+        };
+
+        // Attach event listener to the upload button
+        document.getElementById('upload-btn').addEventListener('click', handleUploadClick);
+    </script>
+
 </body>
 </html>
