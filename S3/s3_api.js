@@ -77,26 +77,6 @@ function s3servermod(app) {
   };
   // Get the directory name of the current module
   const __dirname = process.cwd();
-  // Serve the HTML file
-  /*app.get("/aws-delete.html", (req, res) => {
-    const htmlPath = path.resolve(__dirname, "aws-delete.html");
-    res.sendFile(htmlPath);
-  });*/
-
-  /*// Serve client file
-  app.get("/client.js", (req, res) => {
-    const clientJsPath = path.resolve(__dirname, "../public/client.js");
-    res.type("application/javascript");
-    res.sendFile(clientJsPath);
-  });
-  // Serve the HTML file
-  const parentdir = path.resolve(__dirname, "..");
-  const newdir = path.resolve(parentdir,"/public")
-  
-  app.get("/aws-delete.html", (req, res) => {
-    const htmlPath = path.resolve(__dirname, "../public/aws-delete.html");
-    res.sendFile(htmlPath);
-  });*/
 
   app.get("/admin_store_result.html", (req, res) => {
     const htmlPath2 = path.resolve(__dirname, "../public/admin_store_result.html");

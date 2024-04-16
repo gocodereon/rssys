@@ -4,8 +4,8 @@ const authMiddleware = require("./middleware/checkJWT");
 const s3servermod = require("./S3/s3_api.js");
 const router = express.Router();
 
-const HASURA_URL = "http://localhost:8080/v1/graphql";
-const HASURA_ADMIN_SECRET = "Bb429(a7vkl#";
+const HASURA_URL = process.env.HASURA_URL;
+const HASURA_ADMIN_SECRET = process.env.HASURA_ADMIN_SECRET;
 
 router.use(authMiddleware);     
                                                 
@@ -38,6 +38,7 @@ router.post("/update", async (req, res) => {
 
     const data = await response.json();
     // Unlink the s3url from the "files" table
+    //change "null" to "" if you want it blank
     const responseUnlinkS3Url = await fetch(HASURA_URL, {
       method: "POST",
       headers: {
@@ -49,16 +50,18 @@ router.post("/update", async (req, res) => {
               mutation UnlinkS3Url($id: uuid!) {
                   update_files(
                       where: { result_id: { _eq: $id } },
-                      _set: { s3url: null }
+                      _set: { result_id: "" }
                   ) {
                       affected_rows
                   }
               }
           `,
-          variables: { id: id},
+          variables: { id: id },
       }),
     });
-
+    const dataUnlinkS3Url = await responseUnlinkS3Url.json();
+    console.log("Unlink operation result:", dataUnlinkS3Url);
+    //link new s3url
     const responseInsertNewFile = await fetch(HASURA_URL, {
       method: "POST",
       headers: {

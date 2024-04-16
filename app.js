@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
@@ -12,9 +13,9 @@ const s3server = require("./S3/s3_api.js")
 const app = express();
 
 const PORT = process.env.PORT || 4000;
-const HASURA_URL = "http://localhost:8080/v1/graphql";
-const HASURA_ADMIN_SECRET = "Bb429(a7vkl#";
-const SECRET_KEY = "Bb429(a7vkl#".padEnd(32, "0");
+const HASURA_URL = process.env.HASURA_URL;
+const HASURA_ADMIN_SECRET = process.env.HASURA_ADMIN_SECRET;
+const SECRET_KEY = HASURA_ADMIN_SECRET.padEnd(32, "0");
 
 function hashUsername(userId) {
   const hash = crypto.createHash("sha256");

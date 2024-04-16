@@ -9,7 +9,6 @@
 </head>
 <body class="dark-mode">
   <div class="container mt-5">
-    <!-- Add an input element for file upload -->
     <nav class="title">
       <h1 class="mb-4 text-center">Draw Result API</h1>
     </nav>
@@ -74,7 +73,7 @@
     if (!token) {
     window.location.href = '/';
     }
-
+    
     async function checkexp(username) {
         try {
             const response = await fetch(`http://localhost:4000/check_exp`, {
